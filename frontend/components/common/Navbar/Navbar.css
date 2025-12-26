@@ -28,6 +28,17 @@
     overflow: visible;
 }
 
+/* Reset button styles to match links */
+.mobile_navbar button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    outline: none;
+}
+
 /* Left curve cutout */
 .activeMenuWrapper-before{
     position: absolute;
