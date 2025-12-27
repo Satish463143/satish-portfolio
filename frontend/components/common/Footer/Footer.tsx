@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, Heart, ExternalLink } from 'lucide-react';
+import {  Heart, ExternalLink } from 'lucide-react';
+import { socialLinks } from '../../../src/data/data';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -24,25 +25,7 @@ const Footer = () => {
         { label: 'Contact', href: '#contact' },
       ],
     },
-  ];
-
-  const socialLinks = [
-    {
-      name: 'GitHub',
-      icon: Github,
-      href: 'https://github.com/satish463143',
-    },
-    {
-      name: 'LinkedIn',
-      icon: Linkedin,
-      href: 'https://www.linkedin.com/in/satish-mahato-233151257/',
-    },
-    {
-      name: 'Email',
-      icon: Mail,
-      href: 'mailto:mahatosatish463@gmail.com',
-    },
-  ];
+  ]; 
 
   return (
     <footer className="relative border-t border-[var(--border-soft)] bg-[var(--bg-main)] mt-24">

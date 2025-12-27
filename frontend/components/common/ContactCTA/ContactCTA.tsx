@@ -30,6 +30,18 @@ const ContactCTA = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL+'/contact', {
+      method: 'POST',
+      body: JSON.stringify(formData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to submit form');
+    }
     
     // Simulate form submission
     setTimeout(() => {

@@ -1,4 +1,4 @@
-import { Layers, Radio, Shield, Sparkles, Cloud, Rocket } from 'lucide-react';
+import { Layers, Radio, Shield, Sparkles, Cloud, Rocket, Github, Linkedin, Mail } from 'lucide-react';
 export const services = [
     {
       icon: Layers,
@@ -157,5 +157,23 @@ export const technologies = [
   {
     question: 'Can you integrate AI features into existing applications?',
     answer: 'Absolutely! I specialize in adding OpenAI and Gemini AI capabilities to existing apps: chatbots, content generation, image processing, speech-to-text, and custom AI workflows. Integration typically takes 1-3 weeks.',
+  },
+];
+
+export const socialLinks = [
+  {
+    name: 'GitHub',
+    icon: Github,
+    href: 'https://github.com/satish463143',
+  },
+  {
+    name: 'LinkedIn',
+    icon: Linkedin,
+    href: 'https://www.linkedin.com/in/satish-mahato-233151257/',
+  },
+  {
+    name: 'Email',
+    icon: Mail,
+    href: 'mailto:mahatosatish463@gmail.com',
   },
 ];
