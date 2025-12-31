@@ -30,7 +30,7 @@ const Footer = () => {
   return (
     <footer className="relative border-t border-[var(--border-soft)] bg-[var(--bg-main)] mt-24">
       {/* Gradient decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-1 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 sm:w-96 w-64 h-1 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent" />
 
       <div className="container mx-auto max-w-7xl px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">

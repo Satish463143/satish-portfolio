@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-const ServiceCard = ({
+const ServiceCard = React.memo(({
   service,
   isInView,
   index,
@@ -11,28 +11,52 @@ const ServiceCard = ({
   index: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const rafRef = useRef<number | undefined>(undefined);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const rotateX = useTransform(y, [-100, 100], [10, -10]);
   const rotateY = useTransform(x, [-100, 100], [-10, 10]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(e.clientX - centerX);
-    y.set(e.clientY - centerY);
-  };
+  // Check if mobile on mount
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  const handleMouseLeave = () => {
+  // Throttled mouse move with RAF for smooth performance
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return; // Skip 3D on mobile
+    
+    if (rafRef.current) return; // Skip if already scheduled
+    
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      x.set(e.clientX - centerX);
+      y.set(e.clientY - centerY);
+      rafRef.current = undefined;
+    });
+  }, [x, y, isMobile]);
+
+  const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
     x.set(0);
     y.set(0);
-  };
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = undefined;
+    }
+  }, [x, y]);
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 50, rotateX: 45 }}
       animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
       transition={{
@@ -45,39 +69,45 @@ const ServiceCard = ({
       onMouseLeave={handleMouseLeave}
       className="group relative"
       style={{
-        perspective: 1000,
-        transformStyle: 'preserve-3d',
+        perspective: isMobile ? 'none' : 1000,
+        transformStyle: isMobile ? 'flat' : 'preserve-3d',
+        willChange: 'transform',
       }}
     >
       <motion.div
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
+          rotateX: isMobile ? 0 : rotateX,
+          rotateY: isMobile ? 0 : rotateY,
+          transformStyle: isMobile ? 'flat' : 'preserve-3d',
+          willChange: 'transform',
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="relative h-full"
       >
         {/* Card with layers */}
         <div className="relative h-full p-8 glass-strong rounded-3xl border border-[var(--border-soft)] overflow-hidden">
-          {/* Animated gradient background */}
-          <motion.div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            style={{
-              background: `radial-gradient(600px circle at ${x}px ${y}px, var(--accent-soft), transparent 40%)`,
-            }}
-          />
-
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300">
-            <div
-              className="w-full h-full"
+          {/* Animated gradient background - CSS only on mobile */}
+          {!isMobile ? (
+            <motion.div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{
-                backgroundImage: `linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px)`,
-                backgroundSize: '20px 20px',
+                background: `radial-gradient(600px circle at ${x}px ${y}px, var(--accent-soft), transparent 40%)`,
+                willChange: 'opacity',
               }}
             />
-          </div>
+          ) : (
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[var(--accent-soft)] to-transparent" />
+          )}
+
+          {/* Grid pattern overlay - Pure CSS */}
+          <div 
+            className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+            style={{
+              backgroundImage: `linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px)`,
+              backgroundSize: '20px 20px',
+              willChange: 'opacity',
+            }}
+          />
 
           {/* Floating icon container */}
           <motion.div
@@ -90,10 +120,11 @@ const ServiceCard = ({
               stiffness: 200,
             }}
             className="relative z-10 mb-6"
+            style={{ willChange: 'transform' }}
           >
             <motion.div
               animate={
-                isHovered
+                isHovered && !isMobile
                   ? {
                       rotate: [0, -10, 10, -10, 0],
                       scale: [1, 1.1, 1.1, 1.1, 1],
@@ -102,17 +133,18 @@ const ServiceCard = ({
               }
               transition={{ duration: 0.6 }}
               className="relative inline-block"
+              style={{ willChange: isHovered ? 'transform' : 'auto' }}
             >
-              {/* Icon glow */}
-              <motion.div
-                className="absolute inset-0 bg-[var(--accent)] rounded-2xl blur-xl opacity-0 group-hover:opacity-50"
-                animate={
-                  isHovered
-                    ? { scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }
-                    : {}
-                }
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+              {/* Icon glow - Simplified on mobile */}
+              {!isMobile && isHovered ? (
+                <motion.div
+                  className="absolute inset-0 bg-[var(--accent)] rounded-2xl blur-xl opacity-0 group-hover:opacity-50"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              ) : (
+                <div className="absolute inset-0 bg-[var(--accent)] rounded-2xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
+              )}
               
               {/* Icon background */}
               <div className="relative w-16 h-16 rounded-2xl bg-[var(--accent-soft)] flex items-center justify-center border border-[var(--accent)]/20 group-hover:border-[var(--accent)]/50 transition-all duration-300">
@@ -167,31 +199,38 @@ const ServiceCard = ({
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="flex items-start gap-3 text-sm text-[var(--text-secondary)] group/item"
+                  style={{ willChange: isInView ? 'transform, opacity' : 'auto' }}
                 >
-                  {/* Animated bullet */}
-                  <motion.div
-                    whileHover={{ scale: 1.5, rotate: 180 }}
-                    className="relative mt-1.5 flex-shrink-0"
-                  >
-                    <motion.span
-                      className="block w-1.5 h-1.5 rounded-full bg-[var(--accent)]"
-                      animate={
-                        isHovered
-                          ? {
-                              boxShadow: [
-                                '0 0 0 0 rgba(255, 112, 0, 0.4)',
-                                '0 0 0 4px rgba(255, 112, 0, 0)',
-                              ],
-                            }
-                          : {}
-                      }
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                      }}
-                    />
-                  </motion.div>
+                  {/* Animated bullet - Simplified on mobile */}
+                  {!isMobile ? (
+                    <motion.div
+                      whileHover={{ scale: 1.5, rotate: 180 }}
+                      className="relative mt-1.5 flex-shrink-0"
+                    >
+                      <motion.span
+                        className="block w-1.5 h-1.5 rounded-full bg-[var(--accent)]"
+                        animate={
+                          isHovered
+                            ? {
+                                boxShadow: [
+                                  '0 0 0 0 rgba(255, 112, 0, 0.4)',
+                                  '0 0 0 4px rgba(255, 112, 0, 0)',
+                                ],
+                              }
+                            : {}
+                        }
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                        }}
+                      />
+                    </motion.div>
+                  ) : (
+                    <div className="relative mt-1.5 flex-shrink-0">
+                      <span className="block w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+                    </div>
+                  )}
                   <span className="group-hover/item:text-[var(--text-primary)] transition-colors">
                     {item}
                   </span>
@@ -200,26 +239,28 @@ const ServiceCard = ({
             </div>
           </div>
 
-          {/* Shine effect on hover */}
-          <motion.div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
-            animate={
-              isHovered
-                ? {
-                    background: [
-                      'linear-gradient(135deg, transparent 0%, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%, transparent 100%)',
-                      'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%, transparent 100%)',
-                      'linear-gradient(135deg, transparent 100%, transparent 100%, transparent 100%, transparent 100%, transparent 100%)',
-                    ],
-                  }
-                : {}
-            }
-            transition={{ duration: 1.5, ease: 'easeInOut' }}
-          />
+          {/* Shine effect on hover - Skip on mobile */}
+          {!isMobile && (
+            <motion.div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
+              animate={
+                isHovered
+                  ? {
+                      background: [
+                        'linear-gradient(135deg, transparent 0%, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%, transparent 100%)',
+                        'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%, transparent 100%)',
+                        'linear-gradient(135deg, transparent 100%, transparent 100%, transparent 100%, transparent 100%, transparent 100%)',
+                      ],
+                    }
+                  : {}
+              }
+              transition={{ duration: 1.5, ease: 'easeInOut' }}
+            />
+          )}
 
-          {/* Corner accents */}
-          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[var(--accent)]/0 group-hover:border-[var(--accent)]/50 transition-all duration-500 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-[var(--accent)]/0 group-hover:border-[var(--accent)]/50 transition-all duration-500 rounded-bl-lg" />
+          {/* Corner accents - Pure CSS */}
+          <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-[var(--accent)]/0 group-hover:border-[var(--accent)]/50 transition-all duration-500 rounded-tr-lg" style={{ willChange: 'border-color' }} />
+          <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-[var(--accent)]/0 group-hover:border-[var(--accent)]/50 transition-all duration-500 rounded-bl-lg" style={{ willChange: 'border-color' }} />
 
           {/* Bottom gradient indicator */}
           <motion.div
@@ -227,20 +268,25 @@ const ServiceCard = ({
             animate={isHovered ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.4 }}
             className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent"
-            style={{ originX: 0.5 }}
+            style={{ originX: 0.5, willChange: isHovered ? 'transform' : 'auto' }}
           />
         </div>
 
-        {/* 3D Shadow layer */}
-        <div
-          className="absolute inset-0 -z-10 bg-[var(--accent)]/5 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{
-            transform: 'translateZ(-50px)',
-          }}
-        />
+        {/* 3D Shadow layer - Skip on mobile */}
+        {!isMobile && (
+          <div
+            className="absolute inset-0 -z-10 bg-[var(--accent)]/5 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{
+              transform: 'translateZ(-50px)',
+              willChange: 'opacity',
+            }}
+          />
+        )}
       </motion.div>
     </motion.div>
   );
-};
+});
+
+ServiceCard.displayName = 'ServiceCard';
 
 export default ServiceCard;

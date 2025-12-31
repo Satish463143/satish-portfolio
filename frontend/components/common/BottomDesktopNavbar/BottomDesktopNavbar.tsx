@@ -89,7 +89,7 @@ const BottomDesktopNavbar = () => {
       <div className="relative">
         {/* Glass effect container with pill shape */}
         <div 
-          className="navbar-container flex items-center gap-2 px-4 py-4 rounded-full bg-[var(--bg-glass-strong)] backdrop-blur-xl border border-[var(--border-soft)]"
+          className="navbar-container flex items-center gap-2 px-4 py-3 rounded-full bg-[var(--bg-glass-strong)] backdrop-blur-xl border border-[var(--border-soft)]"
           style={{
             boxShadow: `
               0 2px 4px rgba(0, 0, 0, 0.05),

@@ -286,7 +286,7 @@ const ContactCTA = () => {
                 <div>
                   <p className="font-medium text-[var(--text-primary)]">Response Time</p>
                   <p className="text-[var(--text-secondary)]">
-                    Typically within 24 hours (Mon-Fri, 9 AM - 6 PM IST)
+                    Typically within 24 hours
                   </p>
                 </div>
               </div>

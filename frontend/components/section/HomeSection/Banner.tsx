@@ -1,27 +1,34 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import {useRouter} from 'next/navigation'
 
-// Floating Particles Background
-const ParticlesBackground = () => {
+
+// Floating Particles Background - Optimized with dynamic particle count
+const ParticlesBackground = React.memo(() => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [particleCount, setParticleCount] = useState(50);
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const updateSize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
+      const isMobile = width < 768;
+      
       canvas.width = width;
       canvas.height = height;
       setDimensions({ width, height });
+      setParticleCount(isMobile ? 15 : 50); // 70% reduction on mobile
     };
 
     updateSize();
@@ -36,8 +43,8 @@ const ParticlesBackground = () => {
       opacity: number;
     }> = [];
 
-    // Create particles
-    for (let i = 0; i < 50; i++) {
+    // Create particles based on device
+    for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * dimensions.width,
         y: Math.random() * dimensions.height,
@@ -64,31 +71,39 @@ const ParticlesBackground = () => {
         ctx.fill();
       });
 
-      requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
-    return () => window.removeEventListener('resize', updateSize);
-  }, [dimensions.width, dimensions.height]);
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [dimensions.width, dimensions.height, particleCount]);
 
   return (
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.4 }}
+      style={{ opacity: 0.4, willChange: 'auto' }}
     />
   );
-};
+});
 
-// Animated Gradient Orb
-const GradientOrb = ({ delay = 0 }: { delay?: number }) => {
+ParticlesBackground.displayName = 'ParticlesBackground';
+
+// Animated Gradient Orb - Optimized with GPU hints
+const GradientOrb = React.memo(({ delay = 0 }: { delay?: number }) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1.5, delay }}
       className="absolute w-96 h-96 rounded-full blur-3xl bg-[var(--accent-soft)] opacity-50"
+      style={{ willChange: 'transform, opacity' }}
     >
       <motion.div
         animate={{
@@ -101,14 +116,20 @@ const GradientOrb = ({ delay = 0 }: { delay?: number }) => {
           ease: 'easeInOut',
         }}
         className="w-full h-full rounded-full bg-[var(--accent-soft)]"
+        style={{ willChange: 'transform, opacity' }}
       />
     </motion.div>
   );
-};
+});
+
+GradientOrb.displayName = 'GradientOrb';
 
 const Banner = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+  const rafRef = useRef<number | undefined>(undefined);
+  const router = useRouter()
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -119,16 +140,41 @@ const Banner = () => {
   const rotateX = useTransform(smoothMouseY, [-300, 300], [10, -10]);
   const rotateY = useTransform(smoothMouseX, [-300, 300], [-10, 10]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      mouseX.set(e.clientX - centerX);
-      mouseY.set(e.clientY - centerY);
-      setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    }
-  };
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Throttled mouse move with RAF
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (isMobile) return; // Skip 3D effects on mobile
+    
+    if (rafRef.current) return;
+    
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        mouseX.set(e.clientX - centerX);
+        mouseY.set(e.clientY - centerY);
+        setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      }
+      rafRef.current = undefined as unknown as number | undefined;
+    });
+  }, [mouseX, mouseY, isMobile]);
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
   const scrollToProjects = () => {
     document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' });
@@ -179,6 +225,7 @@ const Banner = () => {
                   ],
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
+                style={{ willChange: 'box-shadow' }}
               />
               <span className="text-sm text-[var(--text-secondary)]">Available for new projects</span>
             </motion.div>
@@ -191,23 +238,22 @@ const Banner = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight"
               >
-                <span className="text-[var(--text-primary)] block">Crafting</span>
-                <span className="text-[var(--text-primary)] block">
-                  exceptional{' '}
+                <span className="text-[var(--text-primary)] lg:text-5xl md:text-4xl text-3xl" >Crafting Exceptional</span> <br />
+                <span className="text-[var(--text-primary)] ">                  
                   <span className="relative inline-block">
                     <span className="relative z-10 bg-gradient-to-r from-[var(--accent)] via-orange-500 to-[var(--accent)] bg-clip-text text-transparent">
-                      web experiences
+                      Web Experiences
                     </span>
                     <motion.div
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: 1 }}
                       transition={{ duration: 0.8, delay: 0.8 }}
                       className="absolute bottom-2 left-0 right-0 h-3 bg-[var(--accent-soft)] -z-0"
-                      style={{ originX: 0 }}
+                      style={{ originX: 0, willChange: 'transform' }}
                     />
                   </span>
                 </span>
-                <span className="text-[var(--text-primary)] block opacity-90">powered by AI</span>
+                <span className="text-[var(--text-primary)] block opacity-90 lg:text-5xl md:text-4xl text-3xl">Powered by AI</span>
               </motion.h1>
 
               <motion.p
@@ -216,8 +262,8 @@ const Banner = () => {
                 transition={{ duration: 0.8, delay: 0.5 }}
                 className="text-lg md:text-xl text-[var(--text-secondary)] leading-relaxed max-w-xl"
               >
-                Full-stack MERN developer & CEO of{' '}
-                <span className="text-[var(--accent)] font-semibold">Bleeding Tech</span>.
+                I’m <span className="text-[var(--accent)] font-semibold">Satish Mahato</span>, a Full-stack MERN developer & CEO of{' '}
+                <span  className="text-[var(--accent)]  cursor-pointer" onClick={()=>router.push('https://bleedingtech.com.np')}>Bleeding Tech</span>.
                 Building high-performance systems with Next.js, AI integrations, and
                 modern cloud infrastructure.
               </motion.p>
@@ -235,6 +281,7 @@ const Banner = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="group relative px-8 py-4 bg-[var(--accent)] text-white rounded-2xl font-semibold overflow-hidden shadow-premium"
+                style={{ willChange: 'transform' }}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   View Projects
@@ -245,6 +292,7 @@ const Banner = () => {
                   initial={{ x: '100%' }}
                   whileHover={{ x: 0 }}
                   transition={{ duration: 0.3 }}
+                  style={{ willChange: 'transform' }}
                 />
               </motion.button>
 
@@ -253,6 +301,7 @@ const Banner = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="group px-8 py-4 glass border border-[var(--border-soft)] text-[var(--text-primary)] rounded-2xl font-semibold hover:border-[var(--accent)]/50 transition-all"
+                style={{ willChange: 'transform' }}
               >
                 <span className="flex items-center gap-2">
                   Let's Talk
@@ -292,8 +341,8 @@ const Banner = () => {
           <motion.div
             className="relative hidden lg:block h-[600px]"
             style={{
-              perspective: 1000,
-              transformStyle: 'preserve-3d',
+              perspective: isMobile ? 'none' : 1000,
+              transformStyle: isMobile ? 'flat' : 'preserve-3d',
             }}
           >
             {/* Floating Cards */}
@@ -311,9 +360,10 @@ const Banner = () => {
                   position: 'absolute',
                   top: `${20 + index * 25}%`,
                   left: `${10 + index * 15}%`,
-                  rotateX,
-                  rotateY,
-                  transformStyle: 'preserve-3d',
+                  rotateX: isMobile ? 0 : rotateX,
+                  rotateY: isMobile ? 0 : rotateY,
+                  transformStyle: isMobile ? 'flat' : 'preserve-3d',
+                  willChange: 'transform, opacity',
                 }}
                 whileHover={{
                   y: -20,
@@ -332,25 +382,29 @@ const Banner = () => {
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                     className="w-8 h-8 rounded-lg bg-[var(--accent-soft)] border border-[var(--accent)]/30"
+                    style={{ willChange: 'transform' }}
                   />
                 </div>
 
-                {/* Content bars */}
+                {/* Content bars - Optimized with scaleX instead of width */}
                 <div className="space-y-3">
                   <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/40 to-transparent rounded-full"
-                    animate={{ width: ['60%', '90%', '60%'] }}
+                    className="h-2 bg-gradient-to-r from-[var(--accent)]/40 to-transparent rounded-full origin-left"
+                    animate={{ scaleX: [0.6, 0.9, 0.6] }}
                     transition={{ duration: 3 + index, repeat: Infinity }}
+                    style={{ willChange: 'transform' }}
                   />
                   <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/30 to-transparent rounded-full"
-                    animate={{ width: ['40%', '75%', '40%'] }}
+                    className="h-2 bg-gradient-to-r from-[var(--accent)]/30 to-transparent rounded-full origin-left"
+                    animate={{ scaleX: [0.4, 0.75, 0.4] }}
                     transition={{ duration: 2.5 + index, repeat: Infinity }}
+                    style={{ willChange: 'transform' }}
                   />
                   <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/20 to-transparent rounded-full"
-                    animate={{ width: ['70%', '50%', '70%'] }}
+                    className="h-2 bg-gradient-to-r from-[var(--accent)]/20 to-transparent rounded-full origin-left"
+                    animate={{ scaleX: [0.7, 0.5, 0.7] }}
                     transition={{ duration: 3.5 + index, repeat: Infinity }}
+                    style={{ willChange: 'transform' }}
                   />
                 </div>
 
@@ -371,6 +425,7 @@ const Banner = () => {
                 ease: 'easeInOut',
               }}
               className="absolute top-10 right-10 w-20 h-20 rounded-full bg-[var(--accent-soft)] blur-xl"
+              style={{ willChange: 'transform' }}
             />
           </motion.div>
         </div>
@@ -381,12 +436,13 @@ const Banner = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.5 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        className="absolute bottom-3 sm:bottom-10 lg:bottom-6 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="flex flex-col items-center gap-2 text-[var(--text-muted)]"
+          style={{ willChange: 'transform' }}
         >
           <span className="text-xs">Scroll to explore</span>
           <div className="w-6 h-10 rounded-full border-2 border-[var(--border-strong)] flex items-start justify-center p-2">
@@ -394,6 +450,7 @@ const Banner = () => {
               animate={{ y: [0, 12, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="w-1 h-2 bg-[var(--accent)] rounded-full"
+              style={{ willChange: 'transform' }}
             />
           </div>
         </motion.div>

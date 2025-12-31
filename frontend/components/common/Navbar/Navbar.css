@@ -120,5 +120,8 @@
     .mobile_navbar{
         width: 97%;
     }
+    .navbar_container_mobile{
+        padding: 0 20px;
+    }
 }
 

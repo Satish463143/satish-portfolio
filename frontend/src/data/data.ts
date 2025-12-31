@@ -1,4 +1,4 @@
-import { Layers, Radio, Shield, Sparkles, Cloud, Rocket, Github, Linkedin, Mail } from 'lucide-react';
+import { Layers, Radio, Shield, Sparkles, Cloud, Rocket, Github, Linkedin, Mail, Instagram } from 'lucide-react';
 export const services = [
     {
       icon: Layers,
@@ -175,5 +175,10 @@ export const socialLinks = [
     name: 'Email',
     icon: Mail,
     href: 'mailto:mahatosatish463@gmail.com',
+  },
+  {
+    name: 'Instagram',
+    icon: Instagram,
+    href: 'https://www.instagram.com/satishmahato13/',
   },
 ];

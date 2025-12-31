@@ -94,8 +94,9 @@ body {
 
 
 .desktop_navbar{
-  width: 730px;
+  width: 707px ;
 }
+
 
 @media (max-width: 800px) {
   .desktop_navbar{
@@ -255,4 +256,34 @@ body::after {
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* =========================
+   PERFORMANCE OPTIMIZED ANIMATIONS
+   ========================= */
+
+/* Slow pulse animation for grid patterns */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.08;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+/* GPU acceleration hints */
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  .gpu-accelerated-opacity {
+    will-change: opacity, transform;
+  }
 }
