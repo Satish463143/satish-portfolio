@@ -59,7 +59,7 @@ export const services = [
 export const projects = [
     { 
       id: '1',
-      image:'./project-1.png',
+      image:'/project-1.png',
       title: 'AI-Powered E-Commerce Platform',
       problem: 'Client needed a scalable marketplace with AI product recommendations',
       result: '3x increase in conversion rate, 500k+ monthly users',
@@ -68,7 +68,7 @@ export const projects = [
     },
     {
       id: '2',
-      image:'./project-1.png',
+      image:'/project-1.png',
       title: 'Real-Time Collaboration Dashboard',
       problem: 'Team management tool with live updates and role-based access',
       result: 'Reduced coordination time by 60%, 10k+ active teams',
@@ -77,7 +77,7 @@ export const projects = [
     },
     {
       id: '3',
-      image:'./project-1.png',
+      image:'/project-1.png',
       title: 'Cloud-Based Asset Management',
       problem: 'Secure file storage system with CDN integration',
       result: '99.99% uptime, 2TB+ assets managed, 50ms avg load time',
@@ -86,7 +86,7 @@ export const projects = [
     },
     {
       id: '4',
-      image:'./project-1.png',
+      image:'/project-1.png',
       title: 'AI Chat Support System',
       problem: 'Automated customer support with natural language processing',
       result: '80% reduction in support tickets, 24/7 availability',
