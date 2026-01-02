@@ -50,7 +50,7 @@ const TechStack = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setActiveCategory(category)}
-              className={`relative px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+              className={`relative cursor-pointer px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                 activeCategory === category
                   ? 'text-white'
                   : 'text-[var(--text-secondary)] glass hover:text-[var(--accent)]'

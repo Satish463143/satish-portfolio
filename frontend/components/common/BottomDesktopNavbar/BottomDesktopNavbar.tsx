@@ -113,7 +113,7 @@ const BottomDesktopNavbar = () => {
                 key={item.href}
                 onClick={() => handleClick(item.href, item.isSection)}
                 aria-current={isActive ? 'page' : undefined}
-                className="relative"
+                className="relative cursor-pointer"
               >
                 <motion.div
                   whileHover={{ 

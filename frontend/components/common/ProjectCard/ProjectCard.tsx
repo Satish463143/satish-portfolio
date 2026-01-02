@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Sparkles,
   FileText,
+  Code,
 } from 'lucide-react';
 
 const ProjectCard = memo(function ProjectCard({
@@ -149,16 +150,44 @@ const ProjectCard = memo(function ProjectCard({
 
             {/* ACTIONS */}
             <div className="flex gap-3 mt-6">
-              <button className="flex-1 flex items-center justify-center gap-2 bg-[var(--accent)] text-white py-3 rounded-xl font-semibold">
-                <FileText size={16} />
-                Case Study
-                <ArrowRight size={16} />
-              </button>
-
-              <button className="px-5 py-3 border border-white/20 rounded-xl">
-                <ExternalLink size={16} />
-              </button>
+              {project.caseStudyLink ? (
+                <button onClick={() => window.open(project.caseStudyLink, '_blank')} className="flex-1 cursor-pointer flex items-center justify-center gap-2 bg-[var(--accent)] text-white py-3 rounded-xl font-semibold">
+                  <FileText size={16} />
+                  Case Study
+                  <ArrowRight size={16} />
+                </button>
+              ) : project.liveLink ? (
+                <button onClick={() => window.open(project.liveLink, '_blank')} className="flex-1 cursor-pointer flex items-center justify-center gap-2 bg-[var(--accent)] text-white py-3 rounded-xl font-semibold">
+                  <ExternalLink size={16} />
+                  View Live
+                  <ArrowRight size={16} />
+                </button>
+              ) : (
+                <button onClick={() => window.open(project.codeLink, '_blank')} className="flex-1 cursor-pointer flex items-center justify-center gap-2 bg-[var(--accent)] text-white py-3 rounded-xl font-semibold">
+                  <Code size={16} />
+                  View Code
+                  <ArrowRight size={16} />
+                </button>
+              )}
+              {project.liveLink && !project.caseStudyLink && (
+                <button onClick={() => window.open(project.codeLink, '_blank')} className="px-5 cursor-pointer py-3 border border-white/20 rounded-xl">
+                  <Code size={16} />
+                </button>
+              )}
+              {project.caseStudyLink && (
+                <>
+                  {project.liveLink && (
+                    <button onClick={() => window.open(project.liveLink, '_blank')} className="px-5 cursor-pointer py-3 border border-white/20 rounded-xl">
+                      <ExternalLink size={16} />
+                    </button>
+                  )}
+                  <button onClick={() => window.open(project.codeLink, '_blank')} className="px-5 cursor-pointer py-3 border border-white/20 rounded-xl">
+                    <Code size={16} />
+                  </button>
+                </>
+              )}
             </div>
+            
           </m.div>
 
           {/* ACCENT BAR */}

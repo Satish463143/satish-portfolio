@@ -280,7 +280,7 @@ const Banner = () => {
                 onClick={scrollToProjects}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative px-8 py-4 bg-[var(--accent)] text-white rounded-2xl font-semibold overflow-hidden shadow-premium"
+                className="group relative px-8 py-4 bg-[var(--accent)] cursor-pointer text-white rounded-2xl font-semibold overflow-hidden shadow-premium"
                 style={{ willChange: 'transform' }}
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -300,7 +300,7 @@ const Banner = () => {
                 onClick={scrollToContact}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group px-8 py-4 glass border border-[var(--border-soft)] text-[var(--text-primary)] rounded-2xl font-semibold hover:border-[var(--accent)]/50 transition-all"
+                className="group px-8 py-4 cursor-pointer glass border border-[var(--border-soft)] text-[var(--text-primary)] rounded-2xl font-semibold hover:border-[var(--accent)]/50 transition-all"
                 style={{ willChange: 'transform' }}
               >
                 <span className="flex items-center gap-2">

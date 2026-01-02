@@ -1,14 +1,16 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   LazyMotion,
   domAnimation,
   m,
+  motion,
   useInView,
 } from 'framer-motion';
 import { projects } from '@/src/data/data';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const Title = dynamic(
   () => import('@/components/common/Title/Title'),
@@ -22,6 +24,16 @@ const ProjectCard = dynamic(
 const Portfolio = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-120px' });
+  const [limit, setLimit] = useState(4)
+
+  const showMoreProjects = () => {
+    
+    if(limit >= projects.length) {
+      setLimit(Number(limit) - 4); // Reset to initial value
+    }else{
+      setLimit(Number(limit) + 4);
+    }
+  }
 
   return (
     <section
@@ -101,7 +113,7 @@ const Portfolio = () => {
           />
 
           <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
-            {projects.map((project, index) => (
+            {projects.slice(0, limit).map((project, index) => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -111,6 +123,25 @@ const Portfolio = () => {
             ))}
           </div>
         </div>
+        <motion.button
+          onClick={showMoreProjects}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="group relative px-8 py-4 bg-[var(--accent)] cursor-pointer text-white rounded-2xl font-semibold overflow-hidden shadow-premium"
+          style={{ willChange: 'transform', display: 'block', margin: '50px auto 0 auto' }}
+        >
+          <span className="relative z-10 flex items-center gap-2 ">
+            {limit < projects.length ? 'View More Projects' : 'View Less Projects'}
+            {limit < projects.length ? <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /> : <ArrowLeft className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+          </span>
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-400"
+            initial={{ x: '100%' }}
+            whileHover={{ x: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ willChange: 'transform' }}
+          />
+        </motion.button>
       </LazyMotion>
     </section>
   );

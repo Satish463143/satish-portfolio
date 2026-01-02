@@ -31,7 +31,7 @@ const ContactCTA = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const response = await fetch(process.env.NEXT_PUBLIC_API_URL+'/contact', {
+    const response = await fetch('https://api.bleedingtech.com.np/contact', {
       method: 'POST',
       body: JSON.stringify(formData),
       headers: {
@@ -189,7 +189,7 @@ const ContactCTA = () => {
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-8 py-4 bg-[var(--accent)] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[var(--accent-glow)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                  className="w-full cursor-pointer px-8 py-4 bg-[var(--accent)] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[var(--accent-glow)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 >
                   {isSubmitting ? (
                     <>

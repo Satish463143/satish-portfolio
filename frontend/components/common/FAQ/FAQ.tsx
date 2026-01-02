@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -50,7 +50,7 @@ const FAQ = () => {
               >
                 <motion.button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full text-left glass-strong p-6 rounded-2xl hover:border-[var(--accent-soft)] transition-all duration-300 group"
+                  className="w-full text-left cursor-pointer glass-strong p-6 rounded-2xl hover:border-[var(--accent-soft)] transition-all duration-300 group"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   aria-expanded={isOpen}
@@ -122,7 +122,7 @@ const FAQ = () => {
                   element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
               }}
-              className="px-8 py-3 bg-[var(--accent)] text-white rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
+              className="px-8 cursor-pointer py-3 bg-[var(--accent)] text-white rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
               Get in Touch
             </button>
