@@ -10,13 +10,14 @@ import {
   FolderOpen, 
   GitBranch, 
   Layers, 
-  MessageCircle 
+  MessageCircle,
+  type LucideIcon 
 } from 'lucide-react';
 
 interface NavItem {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   isSection?: boolean;
 }
 

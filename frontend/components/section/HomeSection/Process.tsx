@@ -8,6 +8,7 @@ import {
   Code,
   TestTube,
   Rocket,
+  type LucideIcon
 } from 'lucide-react';
 import Title from '@/components/common/Title/Title';
 
@@ -15,7 +16,7 @@ interface ProcessStep {
   number: string;
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   color: string;
 }
 
