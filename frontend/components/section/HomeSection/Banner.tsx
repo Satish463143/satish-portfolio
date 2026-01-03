@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import {useRouter} from 'next/navigation'
-
+import Hero3D from '@/components/common/Hero3D/Hero3D';
 
 // Floating Particles Background - Optimized with dynamic particle count
 const ParticlesBackground = React.memo(() => {
@@ -189,7 +189,7 @@ const Banner = () => {
       id="home"
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--bg-main)]"
+      className="relative min-h-screen flex items-center justify-start overflow-hidden bg-[var(--bg-main)]"
     >
       {/* Animated background */}
       <div className="absolute inset-0">
@@ -205,8 +205,8 @@ const Banner = () => {
       {/* Subtle grid overlay */}
       <div className="absolute inset-0 opacity-20 grid-pattern" />
 
-      <div className="container mx-auto max-w-7xl px-6 md:px-12 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-screen py-20">
+      <div className="container mx-auto max-w-7xl  relative z-10">
+        <div className="grid lg:grid-cols-2 gap-5 items-center justify-center  min-h-screen py-20">
           {/* Left Column - Content */}
           <div className="space-y-10">
             {/* Status Badge */}
@@ -337,97 +337,7 @@ const Banner = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - Interactive Visual */}
-          <motion.div
-            className="relative hidden lg:block h-[600px]"
-            style={{
-              perspective: isMobile ? 'none' : 1000,
-              transformStyle: isMobile ? 'flat' : 'preserve-3d',
-            }}
-          >
-            {/* Floating Cards */}
-            {[0, 1, 2].map((index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 100, rotateX: 45 }}
-                animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                transition={{
-                  duration: 1,
-                  delay: 0.5 + index * 0.2,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                style={{
-                  position: 'absolute',
-                  top: `${20 + index * 25}%`,
-                  left: `${10 + index * 15}%`,
-                  rotateX: isMobile ? 0 : rotateX,
-                  rotateY: isMobile ? 0 : rotateY,
-                  transformStyle: isMobile ? 'flat' : 'preserve-3d',
-                  willChange: 'transform, opacity',
-                }}
-                whileHover={{
-                  y: -20,
-                  transition: { duration: 0.3 },
-                }}
-                className="w-72 h-48 glass-strong rounded-3xl border border-[var(--border-soft)] p-6 shadow-premium-strong"
-              >
-                {/* Card decorations */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[var(--accent)]" />
-                    <div className="w-3 h-3 rounded-full bg-[var(--border-soft)]" />
-                    <div className="w-3 h-3 rounded-full bg-[var(--border-soft)]" />
-                  </div>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                    className="w-8 h-8 rounded-lg bg-[var(--accent-soft)] border border-[var(--accent)]/30"
-                    style={{ willChange: 'transform' }}
-                  />
-                </div>
-
-                {/* Content bars - Optimized with scaleX instead of width */}
-                <div className="space-y-3">
-                  <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/40 to-transparent rounded-full origin-left"
-                    animate={{ scaleX: [0.6, 0.9, 0.6] }}
-                    transition={{ duration: 3 + index, repeat: Infinity }}
-                    style={{ willChange: 'transform' }}
-                  />
-                  <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/30 to-transparent rounded-full origin-left"
-                    animate={{ scaleX: [0.4, 0.75, 0.4] }}
-                    transition={{ duration: 2.5 + index, repeat: Infinity }}
-                    style={{ willChange: 'transform' }}
-                  />
-                  <motion.div
-                    className="h-2 bg-gradient-to-r from-[var(--accent)]/20 to-transparent rounded-full origin-left"
-                    animate={{ scaleX: [0.7, 0.5, 0.7] }}
-                    transition={{ duration: 3.5 + index, repeat: Infinity }}
-                    style={{ willChange: 'transform' }}
-                  />
-                </div>
-
-                {/* Glow effect */}
-                <div className="absolute inset-0 rounded-3xl bg-[var(--highlight)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </motion.div>
-            ))}
-
-            {/* Floating accent */}
-            <motion.div
-              animate={{
-                y: [0, -20, 0],
-                rotate: [0, 5, 0],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute top-10 right-10 w-20 h-20 rounded-full bg-[var(--accent-soft)] blur-xl"
-              style={{ willChange: 'transform' }}
-            />
-          </motion.div>
+          <Hero3D />
         </div>
       </div>
 

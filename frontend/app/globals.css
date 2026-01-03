@@ -287,3 +287,8 @@ body::after {
     will-change: opacity, transform;
   }
 }
+@media(max-width:1024px){
+  .globe{
+    display:none;
+  }
+}
