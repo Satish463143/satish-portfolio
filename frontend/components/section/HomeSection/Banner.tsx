@@ -190,6 +190,7 @@ const Banner = () => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className="relative min-h-screen flex items-center justify-start overflow-hidden bg-[var(--bg-main)]"
+      aria-label="Hero section - Introduction to Satish Mahato, Full Stack Developer"
     >
       {/* Animated background */}
       <div className="absolute inset-0">

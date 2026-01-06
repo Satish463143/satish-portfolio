@@ -23,6 +23,7 @@ const TechStack = () => {
       id="stack"
       ref={ref}
       className="relative py-24 px-4 overflow-hidden"
+      aria-label="Technology stack and tools"
     >
       {/* Background decoration */}
       <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-green-500 rounded-full blur-[150px] opacity-10" />

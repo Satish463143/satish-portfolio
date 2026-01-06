@@ -31,6 +31,7 @@ const Service = () => {
       id="services"
       ref={ref}
       className="relative py-32 px-4 overflow-hidden bg-[var(--bg-main)]"
+      aria-label="Services and expertise offered by Satish Mahato"
     >
       {/* Animated Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

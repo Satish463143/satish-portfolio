@@ -24,6 +24,7 @@ const FAQ = () => {
       id="faq"
       ref={ref}
       className="relative py-24 px-4 overflow-hidden"
+      aria-label="Frequently asked questions about services and collaboration"      
     >
       {/* Background decoration */}
       <div className="absolute top-40 right-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-[150px] opacity-10" />

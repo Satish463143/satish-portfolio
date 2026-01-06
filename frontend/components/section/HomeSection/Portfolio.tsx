@@ -40,6 +40,7 @@ const Portfolio = () => {
       id="portfolio"
       ref={ref}
       className="relative py-32 px-4 overflow-hidden bg-[var(--bg-main)]"
+      aria-label="Portfolio showcasing web development projects"
     >
       <LazyMotion features={domAnimation}>
         {/* ===== BACKGROUND EFFECTS ===== */}

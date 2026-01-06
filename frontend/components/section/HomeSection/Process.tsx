@@ -67,6 +67,7 @@ const Process = () => {
       id="process"
       ref={ref}
       className="relative py-24 px-4 overflow-hidden"
+      aria-label="Development process and methodology"
     >
       {/* Background decoration */}
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500 rounded-full blur-[150px] opacity-10" />
