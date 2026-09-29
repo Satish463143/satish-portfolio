@@ -122,10 +122,11 @@ const Footer = () => {
               viewport={{ once: true }}
               className="text-[var(--text-muted)] text-sm flex items-center gap-2"
             >
-              © {currentYear} Satish Mahato. Made with
-              <Heart className="w-4 h-4 text-[var(--accent)] fill-current animate-pulse" />
-              and lots of coffee
+              © {currentYear} Satish Mahato. Made with  lots of coffee
+               {/* <Heart className="w-4 h-4 text-[var(--accent)] fill-current animate-pulse" />
+              and */}
             </motion.p>
+
             {/* Legal Links */}            
           </div>
         </div>

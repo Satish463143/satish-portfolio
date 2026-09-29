@@ -59,19 +59,19 @@ export const services = [
 export const projects = [
     { 
       id: '1',
-      image:'/project-1.png',
+      image:'/maya.webp',
       title: 'Maya Wears',
       problem: 'No dedicated e-commerce platform, causing poor scalability, manual order handling, and limited customer trust.',
       result: 'Built a modern e-commerce website with smooth checkout and mobile-first design, leading to higher sales, better order management, and stronger brand credibility in Nepal.',
       tags: ['React', 'Node.js', 'Express', 'MongoDB'],
-      liveLink:'https://maya-wears.com/',
+      liveLink:'https://mayawears.com.np',
       caseStudyLink:'',
       codeLink:'https://github.com/Satish463143/maya-wears',
       gradient: 'from-purple-500/20 via-pink-500/20 to-orange-500/20',
     },
     {
       id: '2',
-      image:'/project-1.png',
+      image:'/bleeding.webp',
       title: 'Bleeding Tech',
       problem: 'Service-based tech brand lacked a professional website to showcase services, case studies, and capture qualified client leads.',
       result: 'Developed a high-performance website with clear service structure, case studies, and lead-focused contact flows, resulting in increased inquiries, stronger online presence, and improved client trust.',
@@ -83,7 +83,7 @@ export const projects = [
     },
     {
       id: '3',
-      image:'/project-1.png',
+      image:'/unity.webp',
       title: 'Unity For Change',
       problem: 'Organization needed a safe, inclusive digital platform to present identity, mission, and community initiatives professionally.',
       result: 'Created an inclusive, accessible portfolio website highlighting values, projects, and stories, improving visibility, community engagement, and credibility for advocacy and partnership outreach.',
@@ -95,12 +95,12 @@ export const projects = [
     },
     {
       id: '4',
-      image:'/project-1.png',
+      image:'/prasanna.webp',
       title: 'Photographer Portfolio',
       problem: 'Photographer lacked a personal website to professionally showcase work and attract clients.',
       result: 'Built a visually focused portfolio with optimized galleries and contact flow, increasing client inquiries, brand identity, and professional credibility online.',
       tags: ['React', 'Node.js', 'Express', 'MongoDB', "AOS"],
-      liveLink:'https://parsanna-portfolio.vercel.app/services',
+      liveLink:'https://parsanna-portfolio.vercel.app',
       caseStudyLink:'',
       codeLink:'https://github.com/Satish463143/Parsanna-Portfolio',
       gradient: 'from-blue-500/20 via-cyan-500/20 to-teal-500/20',
@@ -175,8 +175,10 @@ export const technologies = [
     
     // Cloud
     { name: 'AWS S3', category: 'Cloud' },
-    {name:'Google Cloud Storage', category: 'Cloud'},
+    {name:'GCP', category: 'Cloud'},
     { name: 'Vercel', category: 'Cloud' },
+    { name: 'EC2', category: 'Cloud' },
+    { name: 'Azure', category: 'Cloud' },
     
     // AI
     { name: 'OpenAI', category: 'AI' },
